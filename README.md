@@ -1,3 +1,3 @@
-## onlineklas-js
+# onlineklas-js
 
-onlineklas tafels spelletje js rewrite
+onlineklas baloon game rewrite in javascript
