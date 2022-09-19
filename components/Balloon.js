@@ -1,22 +1,22 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 
-
-export default function Balloon({ speed, color, answer }) {
-    let pos = 0;
+export default function Balloon({ gameID, onClick, speed, color, answer }) {
     const balloonRef = useRef(null);
 
     useEffect(() => {
-            const interval = setInterval(() => {
-                pos += 0.25;
-                balloonRef.current.style = `transform: translateY(-${pos}vh);`
-            }, speed)
-    }, [])
+        let pos = 22;
+        const interval = setInterval(() => {
+            pos -= 0.25;
+            balloonRef.current.style = `transform: translateY(${pos}vh);`
+        }, speed)
+        return () => clearInterval(interval)
+    }, [gameID]) //score is literally just for balloon position refreshes
 
     return (
-        <div className='self-end' ref={balloonRef}>
-            <p className='text-center text-3xl translate-y-[6.5rem]'>{answer}</p>
-            <img className='w-wit h-80 -mb-[20rem] hover:cursor-pointer' src={`img/${color}_balloon.png`}></img>
+        <div onClick={onClick} className='self-end select-none hover:cursor-pointer' ref={balloonRef}>
+            <p className='text-center text-4xl translate-y-[6.5rem]'>{answer}</p>
+            <img className='h-80 ' src={`img/${color}_balloon.png`}></img>
         </div>
-        
+
     )
 }
