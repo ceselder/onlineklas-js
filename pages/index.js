@@ -1,71 +1,58 @@
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
-import Balloon from '../components/Balloon'
+import NumberSelect from '../components/NumberSelect'
 import Game from '../components/Game'
 
-const allowedTafels = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-function generateQuestion()
-{
-  const q1 = allowedTafels[Math.floor(Math.random() * allowedTafels.length)];
-  const q2 = allowedTafels[Math.floor(Math.random() * allowedTafels.length)];
-  return {q1: q1, q2: q2, type: 'mul'}
-}
+const types = [{ type: 'mul', name: 'Tafels' }, { type: 'div', name: 'Deeltafels' }, { type: 'muldiv', name: 'Tafels & Deeltafels' },
+{ type: 'plus', name: 'Plus' }, { type: 'min', name: 'Min' }, { type: 'plusmin', name: 'Plus & Min' },
+{ type: 'muldivplusmin', name: 'Alles' }]
 
 export default function Home() {
-  const [score, setScore] = useState(0);
-  const [gameID, setGameID] = useState(0);
-  const [lives, setLives] = useState(5);
-  const [question, setQuestion] = useState({q1: null, q2: null, type: 'mul' })
-
-  function onGameOver()
-  {
-    alert('dood!')
-  }
-
-  function onCorrect()
-  {
-    new Audio("/sounds/1_goed.mp3").play()
-    setQuestion(generateQuestion());
-    setGameID(id => id+1);
-    setScore(score => score + 10);
-  }
-
-  function onIncorrect()
-  {
-    new Audio("/sounds/2_fout.mp3").play()
-    setQuestion(generateQuestion());
-    setGameID(id => id+1);
-    setLives(lives => {
-      if (lives <= 1)
-      {
-        onGameOver()
-      }
-      return lives - 1;
-    })
-  }
-
-  useEffect(() => {
-    setQuestion(generateQuestion())
-  }
-  ,[])
+  const [typeIndex, setTypeIndex] = useState(0);
+  const [allowedNumbers, setAllowedNumbers] = useState([true, true, true, true, true, true, true, true, true, true]);
+  const [ingame, setIngame] = useState(false);
 
   return (<>
     <Head>
       <title>Onlineklas</title>
       <link rel="icon" href="/img/green_balloon.png" />
     </Head>
-    <div className='absolute select-none bottom-0  right-0 flex gap-0'>
-    {[...Array(lives)].map((e, i) => <img className='min-h-[4rem]' src="img/hp.png"  key={i}/>)}
+    <div className='min-h-screen flex grow-0 justify-center max-h-screen h-full bg-[#0033ff] w-full'>
+      {!ingame &&
+        (<>
+          <div className='self-center w-[36rem] text-5xl border-4 border-black'>
+            <div className='text-center p-2'>
+              <img onClick={() => setTypeIndex(i => (0 >= i - 1) ? (types.length - 1) : (i - 1))} className='inline-block hover:cursor-pointer rotate-180 w-12 mx-2 -translate-y-0.5' src="img/arrow.png" />
+              {types[typeIndex].name}
+              <img onClick={() => setTypeIndex(i => (types.length > i + 1) ? (i + 1) : (0))} className='inline-block hover:cursor-pointer w-12 mx-2 -translate-y-0.5' src="img/arrow.png" />
+            </div>
+            <div className='text-center w-[100%] border border-black'></div>
+            <div className='text-center m-6 my-8 flex justify-between flex-row'>
+              <NumberSelect allowedNumbers={allowedNumbers} setAllowedNumbers={setAllowedNumbers} num={1} />
+              <NumberSelect allowedNumbers={allowedNumbers} setAllowedNumbers={setAllowedNumbers} num={2} />
+              <NumberSelect allowedNumbers={allowedNumbers} setAllowedNumbers={setAllowedNumbers} num={3} />
+              <NumberSelect allowedNumbers={allowedNumbers} setAllowedNumbers={setAllowedNumbers} num={4} />
+              <NumberSelect allowedNumbers={allowedNumbers} setAllowedNumbers={setAllowedNumbers} num={5} />
+            </div>
+            <div className='text-center m-6 my-8 gap-2 flex justify-between flex-row'>
+              <NumberSelect allowedNumbers={allowedNumbers} setAllowedNumbers={setAllowedNumbers} num={6} />
+              <NumberSelect allowedNumbers={allowedNumbers} setAllowedNumbers={setAllowedNumbers} num={7} />
+              <NumberSelect allowedNumbers={allowedNumbers} setAllowedNumbers={setAllowedNumbers} num={8} />
+              <NumberSelect allowedNumbers={allowedNumbers} setAllowedNumbers={setAllowedNumbers} num={9} />
+              <NumberSelect allowedNumbers={allowedNumbers} setAllowedNumbers={setAllowedNumbers} num={10} />
+            </div>
+          </div>
+          <p onClick={() => setIngame(true)}>play</p>
+        </>)
+      }
+
+
+      {ingame && (<div className='min-h-screen max-h-screen h-full bg-[#0033ff] w-full'>
+        <Game allowedArray={allowedNumbers} />
+      </div>)}
+
     </div>
-    <p className='absolute select-none text-white font-semibold text-4xl ml-2 mb-2 left-0 bottom-0'>Score: {score}</p>
-    <div className='min-h-screen max-h-screen h-full bg-[#0033ff] w-full'>
-      <Game score={score} gameID={gameID} onIncorrect={onIncorrect} onCorrect={onCorrect} question={question} />
-    </div>
-  </>
 
-
-
-
-  )
+  </>)
 }
