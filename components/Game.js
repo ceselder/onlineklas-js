@@ -21,7 +21,7 @@ function generateAnswers(question)
 
 
 export default function Game({score, gameID, question, onCorrect, onIncorrect}) {
-    let [speed, setSpeed] = useState(50);
+    let [speed, setSpeed] = useState(45);
     const [answers, setAnswers] = useState([0, 0, 0, 0, 0]);
     
     function check(answer)
@@ -43,9 +43,9 @@ export default function Game({score, gameID, question, onCorrect, onIncorrect}) 
     useEffect(() => {
         setSpeed(speed => {
             console.log(speed)
-            if (speed > 10)
+            if (speed > 8)
             {
-                return speed - 1;
+                return speed - 0.5;
             }
             return speed;
         })
@@ -61,7 +61,7 @@ export default function Game({score, gameID, question, onCorrect, onIncorrect}) 
   return (
     <>
     <p className='absolute text-[#0097fd] select-none font-semibold text-[18rem] -translate-y-[50%] w-full text-center mt-[45vh]'>{question.q1} {(question.type == 'mul') ? 'X' : '/'} {question.q2}</p>
-    <div className='flex overflow-y-clip grow-0 select-none flex-row min-h-[100vh] max-h-[100vh] justify-between w-[80%] mx-auto'>
+    <div className='flex overflow-y-clip grow-0 select-none flex-row min-h-[100vh] max-h-[100vh] justify-between lg:w-[64rem] xl:w-[78rem] mx-auto'>
         <Balloon gameID={gameID} onClick={() => check(answers[0])} answer={answers[0]} color={'white'} speed={speed} />
         <Balloon gameID={gameID} onClick={() => check(answers[1])} answer={answers[1]} color={'yellow'} speed={speed}/>
         <Balloon gameID={gameID} onClick={() => check(answers[2])} answer={answers[2]} color={'green'} speed={speed}/>
