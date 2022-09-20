@@ -15,7 +15,7 @@ export default function Balloon({ gameID, onClick, speed, color, answer }) {
     return (
         <div onClick={onClick} className='self-end select-none hover:cursor-pointer' ref={balloonRef}>
             <p className='text-center text-black text-4xl translate-y-[6.5rem]'>{answer}</p>
-            <img className='h-80 ' src={`img/${color}_balloon.png`}></img>
+            <img draggable={false} className='h-80 undraggable' src={`img/${color}_balloon.png`}></img>
         </div>
 
     )

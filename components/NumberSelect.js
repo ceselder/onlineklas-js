@@ -10,7 +10,7 @@ export default function NumberSelect({ num, allowedNumbers, setAllowedNumbers })
     }
 
     return (
-        <div onClick={toggle} className={`block hover:cursor-pointer hover:opacity-40 ${allowedNumbers[num - 1] ? '' : 'line-through'} min-w-[4rem] max-w-[4rem] text-center`}>
+        <div onClick={toggle} className={`block select-none hover:cursor-pointer hover:opacity-40 ${allowedNumbers[num - 1] ? '' : 'line-through'} min-w-[4rem] max-w-[4rem] text-center`}>
             {num}
         </div>
     )

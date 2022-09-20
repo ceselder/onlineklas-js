@@ -1,6 +1,27 @@
 import React, { createContext, useEffect, useState } from 'react'
 import Balloon from './Balloon'
 
+function getAnswer(question)
+{
+    //todo switch case
+    if (question.type == 'plus')
+    {
+        return (question.q1 + question.q2)
+    }
+    else if (question.type == 'min')
+    {
+        return (question.q1 - question.q2)
+    }
+    if (question.type == 'mul')
+    {
+        return (question.q1 * question.q2)
+    }
+    if (question.type == 'div')
+    {
+        return (question.q1 / question.q2)
+    }
+}
+
 function generateAnswers(question) {
     const correctIndex = Math.floor(Math.random() * 5);
 
@@ -10,15 +31,35 @@ function generateAnswers(question) {
         answersReturn.push(Math.floor(Math.random() * 99) + 1);
     }
 
-    answersReturn[correctIndex] = question.q1 * question.q2;
-
+    answersReturn[correctIndex] = getAnswer(question);
 
     return answersReturn;
     //todo deel support
 }
 
+const pickGameMode = {};
+pickGameMode['mul'] = ['mul']
+pickGameMode['div'] = ['div']
+pickGameMode['muldiv'] = ['mul', 'div']
+pickGameMode['plus'] = ['plus']
+pickGameMode['min'] = ['min']
+pickGameMode['plusmin'] = ['plus', 'min']
+pickGameMode['muldivplusmin'] = ['mul', 'div', 'plus', 'min']
 
-export default function Game({ allowedArray }) {
+const pickQuestionTypeSymbol = {};
+pickQuestionTypeSymbol['mul'] = ['X']
+pickQuestionTypeSymbol['div'] = [':']
+pickQuestionTypeSymbol['plus'] = ['+']
+pickQuestionTypeSymbol['min'] = ['-']
+
+
+export default function Game({ goBack, gameMode, allowedArray }) {
+    const [speed, setSpeed] = useState(45);
+    const [answers, setAnswers] = useState([0, 0, 0, 0, 0]);
+    const [score, setScore] = useState(0);
+    const [gameID, setGameID] = useState(0);
+    const [lives, setLives] = useState(5);
+    const [question, setQuestion] = useState({ q1: null, q2: null, type: 'mul' })
 
     let allowedNumbers = [];
     for (let i = 0; i < 10; i++)
@@ -30,21 +71,31 @@ export default function Game({ allowedArray }) {
     }
 
     function generateQuestion() {
-        const q1 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
-        const q2 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
-        return { q1: q1, q2: q2, type: 'mul' }
+        const questionType = pickGameMode[gameMode][Math.floor(Math.random() * pickGameMode[gameMode].length)]
+        if (questionType == 'div')
+        {
+            const result = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
+            const q2 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
+            return { q1: result*q2, q2: q2, type: questionType }
+        }
+        else if (questionType == 'min')
+        {
+            //left number must always be bigger than right number
+            const q1 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
+            const q2 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
+            return { q1: Math.max(q1,q2), q2: Math.min(q1,q2), type: questionType }
+        }
+        else
+        {
+            const q1 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
+            const q2 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
+            return { q1: q1, q2: q2, type: questionType }
+        }
     }
-
-    const [speed, setSpeed] = useState(45);
-    const [answers, setAnswers] = useState([0, 0, 0, 0, 0]);
-    const [score, setScore] = useState(0);
-    const [gameID, setGameID] = useState(0);
-    const [lives, setLives] = useState(5);
-    const [question, setQuestion] = useState({ q1: null, q2: null, type: 'mul' })
 
 
     function check(answer) {
-        if (answer == (question.q1 * question.q2)) {
+        if (answer == getAnswer(question)) {
             onCorrect();
         }
         else {
@@ -107,7 +158,7 @@ export default function Game({ allowedArray }) {
                 {[...Array(lives)].map((e, i) => <img className='min-h-[4rem]' src="img/hp.png" key={i} />)}
             </div>
             <p className='absolute select-none text-white font-semibold text-4xl ml-2 mb-2 left-0 bottom-0'>Score: {score}</p>
-            <p className='absolute text-[#0097fd] select-none font-semibold text-[18rem] -translate-y-[50%] w-full text-center mt-[45vh]'>{question.q1} {(question.type == 'mul') ? 'X' : '/'} {question.q2}</p>
+            <p className='absolute text-[#0097fd] select-none font-semibold text-[18rem] -translate-y-[50%] w-full text-center mt-[45vh]'>{question.q1} {pickQuestionTypeSymbol[question.type]} {question.q2}</p>
             <div className='flex overflow-y-clip grow-0 select-none flex-row min-h-[100vh] max-h-[100vh] justify-between lg:w-[64rem] xl:w-[78rem] mx-auto'>
                 <Balloon gameID={gameID} onClick={() => check(answers[0])} answer={answers[0]} color={'white'} speed={speed} />
                 <Balloon gameID={gameID} onClick={() => check(answers[1])} answer={answers[1]} color={'yellow'} speed={speed} />
