@@ -110,7 +110,7 @@ export default function Game({ goBack, gameMode, allowedArray }) {
     useEffect(() => {
         setSpeed(speed => {
             console.log(speed)
-            if (speed > 8) {
+            if (speed > 7) {
                 return speed - 0.5;
             }
             return speed;
@@ -125,7 +125,7 @@ export default function Game({ goBack, gameMode, allowedArray }) {
     }, [gameID])
 
     function onGameOver() {
-        alert('dood!')
+        alert(`Je score was ${score}. Goed gedaan!`)
     }
 
     function onCorrect() {
@@ -142,6 +142,8 @@ export default function Game({ goBack, gameMode, allowedArray }) {
         setLives(lives => {
             if (lives <= 1) {
                 onGameOver()
+                goBack();
+                return 0;
             }
             return lives - 1;
         })
