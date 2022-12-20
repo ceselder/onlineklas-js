@@ -70,27 +70,42 @@ export default function Game({ goBack, gameMode, allowedArray }) {
         }
     }
 
+    //bogus data
+
     function generateQuestion() {
+        let q1 = 0;
+        let q2 = 0;
         const questionType = pickGameMode[gameMode][Math.floor(Math.random() * pickGameMode[gameMode].length)]
         if (questionType == 'div')
         {
             const result = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
-            const q2 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
-            return { q1: result*q2, q2: q2, type: questionType }
+            q2 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
+            q1 = result * q2;
         }
         else if (questionType == 'min')
         {
             //left number must always be bigger than right number
-            const q1 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
-            const q2 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
-            return { q1: Math.max(q1,q2), q2: Math.min(q1,q2), type: questionType }
+            q1 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
+            q2 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
+            q1 = Math.max(q1,q2)
+            q2 = Math.min(q1, q2)
         }
-        else
+        else if (questionType == 'mul')
         {
-            const q1 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
-            const q2 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
-            return { q1: q1, q2: q2, type: questionType }
+            q1 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
+            q2 = Math.ceil(Math.random() * 10);
         }
+        else if (questionType == 'plus')
+        {
+            q1 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
+            q2 = allowedNumbers[Math.floor(Math.random() * allowedNumbers.length)];
+        }
+        const returnQuestion = { q1: q1, q2: q2, type: questionType };
+        if (JSON.stringify(question) === JSON.stringify(returnQuestion)) //apparently beste manier om JSON arrays te comparen
+        {
+            return generateQuestion();
+        }
+        return returnQuestion;
     }
 
 
@@ -109,7 +124,6 @@ export default function Game({ goBack, gameMode, allowedArray }) {
 
     useEffect(() => {
         setSpeed(speed => {
-            console.log(speed)
             if (speed > 7) {
                 return speed - 0.5;
             }
