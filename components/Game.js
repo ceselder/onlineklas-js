@@ -27,11 +27,26 @@ function generateAnswers(question) {
 
     const answersReturn = []
 
-    for (let i = 0; i < 5; i++) {
-        answersReturn.push(Math.floor(Math.random() * 99) + 1);
+    const fakeAnswersSet = new Set(); //set so no duplicate answers
+
+    while (fakeAnswersSet.size < 5) {
+        if (question.type == 'div')
+        {
+            //only want possible answers under 11, obviously
+            fakeAnswersSet.add(Math.floor(Math.random() * 9) + 1);
+        }
+        else
+        {
+            fakeAnswersSet.add(Math.floor(Math.random() * 99) + 1);
+        }
     }
 
-    answersReturn[correctIndex] = getAnswer(question);
+    fakeAnswersSet.forEach(fakeAnswer => { answersReturn.push(fakeAnswer) })
+
+    if (!fakeAnswersSet.has(getAnswer(question)))
+    {
+        answersReturn[correctIndex] = getAnswer(question);
+    }
 
     return answersReturn;
     //todo deel support
@@ -54,7 +69,8 @@ pickQuestionTypeSymbol['min'] = ['-']
 
 
 export default function Game({ goBack, gameMode, allowedArray }) {
-    const [speed, setSpeed] = useState(45);
+    const [sigmoidX, setSigmoidX] = useState(1.75);
+    const [speed, setSpeed] = useState(updateSpeed());
     const [answers, setAnswers] = useState([0, 0, 0, 0, 0]);
     const [score, setScore] = useState(0);
     const [gameID, setGameID] = useState(0);
@@ -118,17 +134,24 @@ export default function Game({ goBack, gameMode, allowedArray }) {
         }
     }
 
+    function sigmoid(x)
+    {
+        return (1 / (1 + Math.exp(-x)))
+    }
+
     useEffect(() => {
         setAnswers(generateAnswers(question));
     }, [question])
 
+    function updateSpeed()
+    {
+        console.log((sigmoid(sigmoidX) * 30) + 5)
+        return ((sigmoid(sigmoidX) * 30) + 5)
+    }
+
     useEffect(() => {
-        setSpeed(speed => {
-            if (speed > 7) {
-                return speed - 0.5;
-            }
-            return speed;
-        })
+        setSpeed(updateSpeed());
+        setSigmoidX(old => old - 0.05);
     }, [score])
 
     useEffect(() => {
